@@ -11,7 +11,7 @@
     group: "{{ minio_group }}"
     system: true
     create_home: false
-    home: "/"
+    home: "{{ minio_config_dir }}"
     shell: "/sbin/nologin"
     state: "present"
 
@@ -23,3 +23,14 @@
     group: "{{ minio_group }}"
     mode: "0750"
     state: "directory"
+
+- name: "Create config dir."
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: "0750"
+    state: "directory"
+  loop:
+    - "{{ minio_config_dir }}"
+    - "{{ minio_config_dir }}/.minio"

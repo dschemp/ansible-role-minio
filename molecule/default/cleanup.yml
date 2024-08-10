@@ -1,0 +1,16 @@
+---
+- name: "Cleanup TLS."
+  hosts: "localhost"
+  gather_facts: false
+  vars:
+    tls_name: "__molecule_minio_tls"
+  tasks:
+    - name: "Delete TLS files."
+      ansible.builtin.file:
+        path: "/tmp/{{ item }}"
+        state: "absent"
+      loop:
+        - "{{ tls_name }}.cer"
+        - "{{ tls_name }}.key"
+        - "{{ tls_name }}_ca.cer"
+        - "{{ tls_name }}_ca.key"

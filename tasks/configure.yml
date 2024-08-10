@@ -6,3 +6,53 @@
     owner: "root"
     group: "root"
     mode: "0640"
+  notify: "Restart service."
+
+- name: "Setup TLS."
+  when: "minio_tls_enabled | bool"
+  block:
+    - name: "Create certs dir."
+      ansible.builtin.file:
+        path: "{{ minio_config_dir }}/.minio/certs"
+        owner: "{{ minio_user }}"
+        group: "{{ minio_group }}"
+        mode: "0750"
+        state: "directory"
+
+    - name: "Copy TLS files."
+      ansible.builtin.copy:
+        content: |
+          {{ item.content }}
+        dest: "{{ minio_config_dir }}/.minio/certs/{{ item.filename }}"
+        owner: "{{ minio_user }}"
+        group: "{{ minio_group }}"
+        mode: "0440"
+      loop:
+        - content: "{{ minio_tls_certificate_content }}"
+          filename: "public.crt"
+        - content: "{{ minio_tls_private_key_content }}"
+          filename: "private.key"
+      loop_control:
+        label: "{{ item.filename }}"
+      notify: "Restart service."
+
+    - name: "Setup custom CA."
+      when: "minio_tls_ca_content is defined"
+      block:
+        - name: "Create CA dir."
+          ansible.builtin.file:
+            path: "{{ minio_config_dir }}/.minio/certs/CAs"
+            owner: "{{ minio_user }}"
+            group: "{{ minio_group }}"
+            mode: "0750"
+            state: "directory"
+
+        - name: "Copy custom CA."
+          ansible.builtin.copy:
+            content: |
+              {{ minio_tls_ca_content }}
+            dest: "{{ minio_config_dir }}/.minio/certs/CAs/myCA.crt"
+            owner: "{{ minio_user }}"
+            group: "{{ minio_group }}"
+            mode: "0440"
+          notify: "Restart service."

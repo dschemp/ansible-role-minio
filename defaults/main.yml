@@ -4,6 +4,7 @@ minio_group: "minio"
 
 minio_bin_dir: "/usr/local/bin"
 minio_data_dir: "/var/lib/minio"
+minio_config_dir: "/opt/minio"
 
 minio_download_url: "https://dl.min.io/server/minio/release/linux-amd64/minio"
 
@@ -22,6 +23,11 @@ minio_browser_enabled: true
 minio_anonymous_logging_enabled: true
 minio_startup_information_enabled: true
 minio_json_logging_enabled: false
+
+minio_tls_enabled: false
+# minio_tls_certificate_content: ""
+# minio_tls_private_key_content: ""
+# minio_tls_ca_content: ""
 
 minio_additional_opts: []
 

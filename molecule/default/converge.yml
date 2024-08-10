@@ -4,3 +4,10 @@
   roles:
     - role: "dschemp.minio"
       become: true
+      vars:
+        minio_tls_enabled: true
+        minio_tls_certificate_content: |
+          {{ lookup('file', '/tmp/__molecule_minio_tls.cer') }}
+          {{ lookup('file', '/tmp/__molecule_minio_tls_ca.cer') }}
+        minio_tls_private_key_content: "{{ lookup('file', '/tmp/__molecule_minio_tls.key') }}"
+        minio_tls_ca_content: "{{ lookup('file', '/tmp/__molecule_minio_tls_ca.cer') }}"
