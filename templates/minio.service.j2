@@ -1,0 +1,33 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=MinIO
+Documentation=https://docs.min.io
+Wants=network-online.target
+After=network-online.target
+AssertFileIsExecutable={{ minio_bin_dir }}/minio
+
+[Service]
+Type=notify
+User={{ minio_user }}
+Group={{ minio_group }}
+WorkingDirectory=/usr/local
+
+EnvironmentFile=-/etc/default/minio
+ExecStart={{ minio_bin_dir }}/minio server $MINIO_OPTS $MINIO_VOLUMES
+
+{# Let systemd restart this service always #}
+Restart=always
+{# Specifies the maximum file descriptor number that can be opened by this process #}
+LimitNOFILE=1048576
+{# Turn-off memory accounting by systemd, which is buggy. #}
+MemoryAccounting=no
+{# Specifies the maximum number of threads this process can create #}
+TasksMax=infinity
+{# Disable timeout logic and wait until process is stopped #}
+TimeoutSec=infinity
+SendSIGKILL=no
+ProtectProc=invisible
+
+[Install]
+WantedBy=multi-user.target

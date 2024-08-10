@@ -1,0 +1,25 @@
+---
+- name: "Create system group."
+  ansible.builtin.group:
+    name: "{{ minio_group }}"
+    system: true
+    state: "present"
+
+- name: "Create system user."
+  ansible.builtin.user:
+    name: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    system: true
+    create_home: false
+    home: "/"
+    shell: "/sbin/nologin"
+    state: "present"
+
+- name: "Create application dir."
+  when: "minio_data_dir in minio_volumes"
+  ansible.builtin.file:
+    path: "{{ minio_data_dir }}"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: "0750"
+    state: "directory"

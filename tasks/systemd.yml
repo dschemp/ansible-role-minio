@@ -1,0 +1,15 @@
+---
+- name: "Setup systemd service."
+  ansible.builtin.template:
+    src: "minio.service.j2"
+    dest: "/etc/systemd/system/{{ minio_daemon_name }}.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Start and enable service."
+  ansible.builtin.systemd_service:
+    name: "{{ minio_daemon_name }}"
+    daemon_reload: true
+    enabled: true
+    state: "started"

@@ -1,0 +1,25 @@
+{{ ansible_managed | comment }}
+
+{# https://min.io/docs/minio/linux/reference/minio-server/minio-server.html#minio-server-parameters #}
+MINIO_OPTS={{ minio_opts | join(' ') | quote }}
+
+MINIO_VOLUMES={{ minio_volumes | join(' ') | quote }}
+
+{% if minio_domain is defined %}
+MINIO_DOMAIN={{ minio_domain | quote }}
+{% endif %}
+
+{% if minio_root_username is defined %}
+MINIO_ROOT_USER={{ minio_root_username | quote }}
+{% endif %}
+{% if minio_root_password is defined %}
+MINIO_ROOT_PASSWORD={{ minio_root_password | quote }}
+{% endif %}
+
+MINIO_BROWSER={{ minio_browser_enabled | to_json | quote }}
+{% if minio_browser_redirect_enabled is defined %}
+MINIO_BROWSER_REDIRECT={{ minio_browser_redirect_enabled | to_json | quote }}
+{% endif %}
+{% if minio_browser_redirect_url is defined %}
+MINIO_BROWSER_REDIRECT_URL={{ minio_browser_redirect_url | quote }}
+{% endif %}

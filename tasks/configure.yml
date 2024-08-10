@@ -1,0 +1,8 @@
+---
+- name: "Place config file."
+  ansible.builtin.template:
+    src: "minio.default.j2"
+    dest: "/etc/default/minio"
+    owner: "root"
+    group: "root"
+    mode: "0640"

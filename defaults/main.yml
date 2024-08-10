@@ -1,0 +1,29 @@
+---
+minio_user: "minio"
+minio_group: "minio"
+
+minio_bin_dir: "/usr/local/bin"
+minio_data_dir: "/var/lib/minio"
+
+minio_download_url: "https://dl.min.io/server/minio/release/linux-amd64/minio"
+
+# minio_domain: "minio.example.org"
+
+# minio_root_username: "minioadmin"
+# minio_root_password: "minioadmin"
+
+minio_address: ":9000"
+minio_console_address: ":9001"
+
+minio_browser_enabled: true
+# minio_browser_redirect_enabled: true
+# minio_browser_redirect_url: "https://example.org/minio/"
+
+minio_anonymous_logging_enabled: true
+minio_startup_information_enabled: true
+minio_json_logging_enabled: false
+
+minio_additional_opts: []
+
+minio_volumes:
+  - "{{ minio_data_dir }}"

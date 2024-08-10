@@ -1,0 +1,42 @@
+---
+- name: "Set platform/version specific variables."
+  ansible.builtin.include_vars: "{{ __minio_vars_file }}"
+  loop: "{{ __minio_vars_file_list }}"
+  vars:
+    __minio_vars_file_list:
+      - "OS-{{ ansible_facts['os_family'] }}.yml"
+      - "OS-{{ ansible_facts['os_family'] }}-{{ ansible_facts['distribution_major_version'] }}.yml"
+      - "D-{{ ansible_facts['distribution'] }}.yml"
+      - "D-{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}.yml"
+      - "D-{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }}.yml"
+    __minio_vars_file: "{{ role_path }}/vars/{{ item }}"
+  when: "__minio_vars_file is file"
+
+- name: "Append address to opts."
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts | default([]) + ['--address={{ minio_address | quote }}'] }}"
+
+- name: "Append console address to opts."
+  when: "minio_console_address is defined"
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts + ['--console-address={{ minio_console_address | quote }}'] }}"
+
+- name: "Append console address to opts."
+  when: "minio_anonymous_logging_enabled | bool"
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts + ['--anonymous'] }}"
+
+- name: "Append console address to opts."
+  when: "not (minio_startup_information_enabled | bool)"
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts + ['--quiet'] }}"
+
+- name: "Append console address to opts."
+  when: "minio_json_logging_enabled | bool"
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts + ['--json'] }}"
+
+- name: "Append additional opts to opts."
+  when: "minio_additional_opts | length > 0"
+  ansible.builtin.set_fact:
+    minio_opts: "{{ minio_opts + minio_additional_opts }}"

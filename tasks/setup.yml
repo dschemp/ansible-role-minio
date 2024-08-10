@@ -1,0 +1,18 @@
+---
+- name: "Download binary."
+  ansible.builtin.get_url:
+    url: "{{ minio_download_url }}"
+    dest: "/tmp"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: "minio_download_bin"
+
+- name: "Copy binary."
+  ansible.builtin.copy:
+    src: "{{ minio_download_bin.dest }}"
+    dest: "{{ minio_bin_dir }}"
+    remote_src: true
+    owner: "root"
+    group: "root"
+    mode: "0755"
