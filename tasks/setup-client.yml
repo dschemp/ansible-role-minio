@@ -10,7 +10,7 @@
 
     # Any task after this task in this block will not be executed anymore as the block's condition is not met anymore
     # Thats why we can't debug the minio_client_version var after re-setting it w/o a workaround or hack.
-    - name: "Extract latest client version."
+    - name: "Extract latest client version info."
       ansible.builtin.set_fact:
         minio_client_version: "{{ github_minio_mc_latest_release.json.tag_name }}"
 
