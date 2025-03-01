@@ -3,7 +3,11 @@
 {# https://min.io/docs/minio/linux/reference/minio-server/minio-server.html#minio-server-parameters #}
 MINIO_OPTS={{ minio_opts | default([]) | join(' ') | quote }}
 
+{% if minio_cluster_is_member | bool %}
+MINIO_VOLUMES={{ minio_cluster_volumes | join(' ') | quote }}
+{% else %}
 MINIO_VOLUMES={{ minio_volumes | join(' ') | quote }}
+{% endif %}
 
 {% if minio_domain is defined %}
 MINIO_DOMAIN={{ minio_domain | quote }}
@@ -36,4 +40,8 @@ MINIO_BROWSER_HSTS_PRELOAD={{ minio_browser_hsts_preload_enabled | to_json | quo
 {% endif %}
 {% if minio_browser_referrer_policy is defined %}
 MINIO_BROWSER_REFERRER_POLICY={{ minio_browser_referrer_policy | quote }}
+{% endif %}
+
+{% if minio_ci_mode_enabled is defined %}
+CI={{ minio_ci_mode_enabled | to_json | quote }}
 {% endif %}

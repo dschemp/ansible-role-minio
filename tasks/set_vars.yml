@@ -11,3 +11,22 @@
       - "D-{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_version'] }}.yml"
     __minio_vars_file: "{{ role_path }}/vars/{{ item }}"
   when: "__minio_vars_file is file"
+
+- name: "Set variables."
+  ansible.builtin.set_fact:
+    minio_volumes: "{{ minio_volumes }}"
+    minio_address: "{{ minio_address }}"
+    minio_tls_enabled: "{{ minio_tls_enabled }}"
+    minio_cluster_is_member: "{{ minio_cluster_group_name in groups }}"
+    minio_cluster_host: "{{ minio_cluster_host }}"
+
+- name: "Set cluster volumes."
+  when: "minio_cluster_is_member"
+  vars:
+    _schema: "{{ 'https' if hostvars[item].minio_tls_enabled else 'http' }}"
+    _host: "{{ hostvars[item].minio_cluster_host }}"
+    _port: "{{ (hostvars[item].minio_address | split(':'))[-1] }}"
+    _base_url: "{{ _schema }}://{{ _host }}:{{ _port }}"
+  ansible.builtin.set_fact:
+    minio_cluster_volumes: "{{ minio_cluster_volumes | default([]) + ([_base_url] | product(hostvars[item].minio_volumes) | map('join') | list) }}"
+  loop: "{{ groups[minio_cluster_group_name] }}"

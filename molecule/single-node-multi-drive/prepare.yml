@@ -1,0 +1,52 @@
+---
+- name: "Prepare TLS."
+  hosts: "localhost"
+  gather_facts: false
+  vars:
+    tls_name: "__molecule_minio_tls"
+  tasks:
+    - name: "Create private key of CA."
+      community.crypto.openssl_privatekey:
+        path: "/tmp/{{ tls_name }}_ca.key"
+
+    - name: "Create certificate signing request (CSR) for CA certificate."
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "/tmp/{{ tls_name }}_ca.key"
+        common_name: "Ansible CA"
+        use_common_name_for_san: false # since we do not specify SANs, don't use CN as a SAN
+        basic_constraints:
+          - "CA:TRUE"
+        basic_constraints_critical: true
+        key_usage:
+          - "keyCertSign"
+        key_usage_critical: true
+      register: "ca_csr"
+
+    - name: "Create self-signed CA certificate."
+      community.crypto.x509_certificate:
+        path: "/tmp/{{ tls_name }}_ca.cer"
+        csr_content: "{{ ca_csr.csr }}"
+        privatekey_path: "/tmp/{{ tls_name }}_ca.key"
+        provider: "selfsigned"
+
+    - name: "Create private key for new server certificate."
+      community.crypto.openssl_privatekey:
+        path: "/tmp/{{ tls_name }}.key"
+
+    - name: "Create CSR for new server certificate."
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "/tmp/{{ tls_name }}.key"
+        subject_alt_name:
+          - "DNS:localhost"
+          - "DNS:instance"
+      register: "csr"
+
+    - name: "Sign certificate with CA."
+      community.crypto.x509_certificate:
+        path: "/tmp/{{ tls_name }}.cer"
+        csr_content: "{{ csr.csr }}"
+        provider: "ownca"
+        ownca_path: "/tmp/{{ tls_name }}_ca.cer"
+        ownca_privatekey_path: "/tmp/{{ tls_name }}_ca.key"
+        ownca_not_after: +365d # valid for one year
+        ownca_not_before: "-1d" # valid since yesterday

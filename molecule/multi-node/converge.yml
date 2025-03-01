@@ -12,6 +12,8 @@
         minio_tls_private_key_content: "{{ lookup('file', '/tmp/__molecule_minio_tls.key') }}"
         minio_tls_ca_content: "{{ lookup('file', '/tmp/__molecule_minio_tls_ca.cer') }}"
         minio_root_username: "minioadmin"
+        minio_root_password: "minioadmin"
         minio_volumes:
           - "/var/lib/minio"
+          - "/var/lib/minio2"
         minio_ci_mode_enabled: true # used for testing and disabling certain safety measures like needing separate hard drives

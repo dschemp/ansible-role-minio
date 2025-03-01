@@ -45,3 +45,6 @@ minio_volumes:
 
 # only to be used for opts which are not represented in any other way already
 minio_opts: []
+
+minio_cluster_group_name: "minio_cluster" # Ansible group containing all cluster members
+minio_cluster_host: "{{ ansible_host }}" # host used to interconnect cluster members
