@@ -1,5 +1,44 @@
 ---
-- name: "Download binary."
+- name: "Resolve server version if set to latest."
+  when: "minio_version == 'latest'"
+  block:
+    - name: "Find latest server release via GitHub API."
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/minio/minio/releases/latest"
+      run_once: true
+      register: "github_minio_latest_release"
+
+    # Any task after this task in this block will not be executed anymore as the block's condition is not met anymore
+    # Thats why we can't debug the minio_version var after re-setting it w/o a workaround or hack.
+    - name: "Extract latest server version."
+      ansible.builtin.set_fact:
+        minio_version: "{{ github_minio_latest_release.json.tag_name }}"
+
+- name: "Check if server is installed."
+  ansible.builtin.stat:
+    path: "{{ minio_bin_dir }}/minio"
+  register: "stat_minio_bin"
+
+- name: "Check for installed server version."
+  when: "stat_minio_bin.stat.exists"
+  block:
+    - name: "Get installed server version."
+      ansible.builtin.command:
+        cmd: "{{ minio_bin_dir }}/minio --version"
+      changed_when: false
+      register: "minio_version_cmd"
+
+    - name: "Extract installed server version."
+      ansible.builtin.set_fact:
+        minio_installed_version: "{{ minio_version_cmd.stdout | regex_search('minio version (\\w+\\.[0-9TZ\\-]+) \\(', '\\1') | first }}"
+
+    - name: "Stop server for update."
+      when: "minio_installed_version != minio_version"
+      ansible.builtin.service:
+        name: "{{ minio_daemon_name }}"
+        state: "stopped"
+
+- name: "Download server binary."
   ansible.builtin.get_url:
     url: "{{ minio_download_url }}"
     dest: "/tmp"
@@ -8,11 +47,12 @@
     mode: "0644"
   register: "minio_download_bin"
 
-- name: "Copy binary."
+- name: "Copy server binary."
   ansible.builtin.copy:
     src: "{{ minio_download_bin.dest }}"
-    dest: "{{ minio_bin_dir }}"
+    dest: "{{ minio_bin_dir }}/minio"
     remote_src: true
     owner: "root"
     group: "root"
     mode: "0755"
+  notify: "Restart {{ role_name }}."

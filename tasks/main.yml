@@ -5,8 +5,12 @@
 - name: "Import preflight tasks."
   ansible.builtin.import_tasks: "preflight.yml"
 
-- name: "Import setup tasks."
+- name: "Import server setup tasks."
   ansible.builtin.import_tasks: "setup.yml"
+
+- name: "Import client setup tasks."
+  when: "minio_client_installed"
+  ansible.builtin.include_tasks: "setup-client.yml"
 
 - name: "Import configure tasks."
   ansible.builtin.import_tasks: "configure.yml"

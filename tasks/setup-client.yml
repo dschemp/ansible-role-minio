@@ -1,0 +1,33 @@
+---
+- name: "Resolve client version if set to latest."
+  when: "minio_client_version == 'latest'"
+  block:
+    - name: "Find latest client release via GitHub API."
+      ansible.builtin.uri:
+        url: "https://api.github.com/repos/minio/mc/releases/latest"
+      run_once: true
+      register: "github_minio_mc_latest_release"
+
+    # Any task after this task in this block will not be executed anymore as the block's condition is not met anymore
+    # Thats why we can't debug the minio_client_version var after re-setting it w/o a workaround or hack.
+    - name: "Extract latest client version."
+      ansible.builtin.set_fact:
+        minio_client_version: "{{ github_minio_mc_latest_release.json.tag_name }}"
+
+- name: "Download client binary."
+  ansible.builtin.get_url:
+    url: "{{ minio_client_download_url }}"
+    dest: "/tmp"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: "minio_client_download_bin"
+
+- name: "Copy client binary."
+  ansible.builtin.copy:
+    src: "{{ minio_client_download_bin.dest }}"
+    dest: "{{ minio_bin_dir }}/mc"
+    remote_src: true
+    owner: "root"
+    group: "root"
+    mode: "0755"

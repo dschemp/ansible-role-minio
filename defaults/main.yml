@@ -5,7 +5,12 @@ minio_group: "minio"
 minio_bin_dir: "/usr/local/bin"
 minio_config_dir: "/opt/minio"
 
-minio_download_url: "https://dl.min.io/server/minio/release/linux-amd64/minio"
+minio_version: "latest" # or a specific version like "RELEASE.2025-02-28T09-55-16Z"
+minio_download_url: "https://dl.min.io/server/minio/release/linux-amd64/archive/minio.{{ minio_version }}"
+
+minio_client_installed: true
+minio_client_version: "latest" # or a specific version like "RELEASE.2025-02-21T16-00-46Z"
+minio_client_download_url: "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.{{ minio_client_version }}"
 
 # minio_domain: "minio.example.org"
 
