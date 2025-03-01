@@ -1,0 +1,8 @@
+{{ ansible_managed | comment }}
+
+{% if minio_root_username is defined %}
+MINIO_ROOT_USER={{ minio_root_username | quote }}
+{% endif -%}
+{% if minio_root_password is defined %}
+MINIO_ROOT_PASSWORD={{ minio_root_password | quote }}
+{% endif -%}

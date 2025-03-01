@@ -9,13 +9,6 @@ MINIO_VOLUMES={{ minio_volumes | join(' ') | quote }}
 MINIO_DOMAIN={{ minio_domain | quote }}
 {% endif %}
 
-{% if minio_root_username is defined %}
-MINIO_ROOT_USER={{ minio_root_username | quote }}
-{% endif -%}
-{% if minio_root_password is defined %}
-MINIO_ROOT_PASSWORD={{ minio_root_password | quote }}
-{% endif -%}
-
 MINIO_BROWSER={{ minio_browser_enabled | to_json | quote }}
 {% if minio_browser_redirect_enabled is defined %}
 MINIO_BROWSER_REDIRECT={{ minio_browser_redirect_enabled | to_json | quote }}

@@ -9,6 +9,11 @@ minio_download_url: "https://dl.min.io/server/minio/release/linux-amd64/minio"
 
 # minio_domain: "minio.example.org"
 
+## Credential generation only runs when /etc/default/minioadmin does not exist
+## e.g. at initial installation.
+## Requires the community.general collection for the random_string lookup.
+## If you don't set any root credentials and disable generation the defaults by Minio will be used.
+minio_root_generate_credentials: true
 # minio_root_username: "minioadmin"
 # minio_root_password: "minioadmin"
 

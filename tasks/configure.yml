@@ -8,6 +8,37 @@
     mode: "0640"
   notify: "Restart {{ role_name }}."
 
+- name: "Check for credentials file."
+  ansible.builtin.stat:
+    path: "/etc/default/minioadmin"
+  register: "stat_minio_creds"
+
+- name: "Generate root credentials file."
+  when: "not stat_minio_creds.stat.exists"
+  block:
+    - name: "Generate root username."
+      when:
+        - "minio_root_username is undefined"
+        - "minio_root_generate_credentials | bool"
+      ansible.builtin.set_fact:
+        minio_root_username: "minioadmin-{{ lookup('community.general.random_string', upper=false, special=false) }}"
+
+    - name: "Generate root password."
+      when:
+        - "minio_root_password is undefined"
+        - "minio_root_generate_credentials | bool"
+      ansible.builtin.set_fact:
+        minio_root_password: "{{ lookup('community.general.random_string', length=48, min_lower=1, min_upper=1, min_numeric=1, special=false) }}"
+
+    - name: "Place credentials config file."
+      ansible.builtin.template:
+        src: "minioadmin.default.j2"
+        dest: "/etc/default/minioadmin"
+        owner: "root"
+        group: "root"
+        mode: "0640"
+      notify: "Restart {{ role_name }}."
+
 - name: "Setup TLS."
   when: "minio_tls_enabled | bool"
   block:
