@@ -6,7 +6,7 @@
     owner: "root"
     group: "root"
     mode: "0640"
-  notify: "Restart service."
+  notify: "Restart {{ role_name }}."
 
 - name: "Setup TLS."
   when: "minio_tls_enabled | bool"
@@ -34,7 +34,7 @@
           filename: "private.key"
       loop_control:
         label: "{{ item.filename }}"
-      notify: "Restart service."
+      notify: "Restart {{ role_name }}."
 
     - name: "Setup custom CA."
       when: "minio_tls_ca_content is defined"
@@ -55,4 +55,4 @@
             owner: "{{ minio_user }}"
             group: "{{ minio_group }}"
             mode: "0440"
-          notify: "Restart service."
+          notify: "Restart {{ role_name }}."

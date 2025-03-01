@@ -1,7 +1,7 @@
 {{ ansible_managed | comment }}
 
 {# https://min.io/docs/minio/linux/reference/minio-server/minio-server.html#minio-server-parameters #}
-MINIO_OPTS={{ minio_opts | join(' ') | quote }}
+MINIO_OPTS={{ minio_opts | default([]) | join(' ') | quote }}
 
 MINIO_VOLUMES={{ minio_volumes | join(' ') | quote }}
 
@@ -11,10 +11,10 @@ MINIO_DOMAIN={{ minio_domain | quote }}
 
 {% if minio_root_username is defined %}
 MINIO_ROOT_USER={{ minio_root_username | quote }}
-{% endif %}
+{% endif -%}
 {% if minio_root_password is defined %}
 MINIO_ROOT_PASSWORD={{ minio_root_password | quote }}
-{% endif %}
+{% endif -%}
 
 MINIO_BROWSER={{ minio_browser_enabled | to_json | quote }}
 {% if minio_browser_redirect_enabled is defined %}
@@ -22,4 +22,25 @@ MINIO_BROWSER_REDIRECT={{ minio_browser_redirect_enabled | to_json | quote }}
 {% endif %}
 {% if minio_browser_redirect_url is defined %}
 MINIO_BROWSER_REDIRECT_URL={{ minio_browser_redirect_url | quote }}
+{% endif %}
+{% if minio_browser_login_animations_enabled is defined %}
+MINIO_BROWSER_LOGIN_ANIMATION={{ minio_browser_login_animations_enabled | to_json | quote }}
+{% endif %}
+{% if minio_browser_session_duration is defined %}
+MINIO_BROWSER_SESSION_DURATION={{ minio_browser_session_duration | quote }}
+{% endif %}
+{% if minio_browser_content_security_policy is defined %}
+MINIO_BROWSER_CONTENT_SECURITY_POLICY={{ minio_browser_content_security_policy | quote }}
+{% endif %}
+{% if minio_browser_hsts_seconds is defined %}
+MINIO_BROWSER_HSTS_SECONDS={{ minio_browser_hsts_seconds | quote }}
+{% endif %}
+{% if minio_browser_hsts_include_sub_domains_enabled is defined %}
+MINIO_BROWSER_HSTS_INCLUDE_SUB_DOMAINS={{ minio_browser_hsts_include_sub_domains_enabled | to_json | quote }}
+{% endif %}
+{% if minio_browser_hsts_preload_enabled is defined %}
+MINIO_BROWSER_HSTS_PRELOAD={{ minio_browser_hsts_preload_enabled | to_json | quote }}
+{% endif %}
+{% if minio_browser_referrer_policy is defined %}
+MINIO_BROWSER_REFERRER_POLICY={{ minio_browser_referrer_policy | quote }}
 {% endif %}
