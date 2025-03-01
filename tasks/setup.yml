@@ -41,6 +41,7 @@
 - name: "Download server binary."
   ansible.builtin.get_url:
     url: "{{ minio_download_url }}"
+    checksum: "{{ minio_download_checksum }}"
     dest: "/tmp"
     owner: "root"
     group: "root"

@@ -40,6 +40,7 @@
           - "DNS:localhost"
           - "DNS:node01"
           - "DNS:node02"
+          - "DNS:node03"
       register: "csr"
 
     - name: "Sign certificate with CA."

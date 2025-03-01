@@ -39,6 +39,27 @@
         mode: "0640"
       notify: "Restart {{ role_name }}."
 
+- name: "Copy credentials file to cluster nodes."
+  when:
+    - "minio_is_cluster_member"
+    - "minio_root_generate_credentials"
+    - "groups[minio_cluster_group_name].index(inventory_hostname) != 0"
+  block:
+    - name: "Fetch credentials from first node."
+      ansible.builtin.slurp:
+        path: "/etc/default/minioadmin"
+      register: "minioadmin_credentials"
+      delegate_to: "{{ groups[minio_cluster_group_name] | first }}"
+
+    - name: "Distribute credentials to other nodes."
+      ansible.builtin.copy:
+        content: "{{ minioadmin_credentials.content | b64decode }}"
+        dest: "/etc/default/minioadmin"
+        owner: "root"
+        group: "root"
+        mode: "0640"
+      notify: "Restart {{ role_name }}."
+
 - name: "Setup TLS."
   when: "minio_tls_enabled | bool"
   block:

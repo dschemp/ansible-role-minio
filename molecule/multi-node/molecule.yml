@@ -23,6 +23,7 @@ platforms:
       - minio_cluster
     networks:
       - name: molecule
+
   - name: node02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-rockylinux8}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -34,6 +35,22 @@ platforms:
     published_ports:
       - 9010:9000
       - 9011:9001
+    groups:
+      - minio_cluster
+    networks:
+      - name: molecule
+
+  - name: node03
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-rockylinux8}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    published_ports:
+      - 9020:9000
+      - 9021:9001
     groups:
       - minio_cluster
     networks:
