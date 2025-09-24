@@ -1,2 +1,7 @@
 ---
 minio_daemon_name: "minio"
+
+minio_arch: "{{ __minio_arch_map[ansible_architecture] }}"
+__minio_arch_map:
+  "x86_64": "amd64"
+  "aarch64": "arm64"
