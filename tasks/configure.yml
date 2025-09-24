@@ -60,17 +60,18 @@
         mode: "0640"
       notify: "Restart {{ role_name }}."
 
-- name: "Setup TLS."
+- name: "Configure certs dir."
+  ansible.builtin.file:
+    path: "{{ minio_config_dir }}/.minio/certs"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: "0750"
+    state: "{{ 'directory' if minio_tls_enabled else 'absent' }}"
+  notify: "Restart {{ role_name }}."
+
+- name: "Configure TLS."
   when: "minio_tls_enabled | bool"
   block:
-    - name: "Create certs dir."
-      ansible.builtin.file:
-        path: "{{ minio_config_dir }}/.minio/certs"
-        owner: "{{ minio_user }}"
-        group: "{{ minio_group }}"
-        mode: "0750"
-        state: "directory"
-
     - name: "Copy TLS files."
       ansible.builtin.copy:
         content: |

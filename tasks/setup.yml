@@ -35,7 +35,7 @@
     - name: "Stop server for update."
       when: "minio_installed_version != minio_version"
       ansible.builtin.service:
-        name: "{{ minio_daemon_name }}"
+        name: "{{ minio_service_name }}"
         state: "stopped"
 
 - name: "Download server binary."

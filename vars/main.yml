@@ -1,5 +1,5 @@
 ---
-minio_daemon_name: "minio"
+minio_service_name: "minio"
 
 minio_arch: "{{ __minio_arch_map[ansible_architecture] }}"
 __minio_arch_map:
