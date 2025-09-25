@@ -48,5 +48,37 @@ ProtectProc=invisible
 {# Disable killing of MinIO by the kernel's OOM killer #}
 OOMScoreAdjust=-1000
 
+{# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#Capabilities #}
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+{# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#Security #}
+NoNewPrivileges=yes
+
+{# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#Process%20Properties #}
+UMask=0077
+
+{# https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#Sandboxing #}
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths={{ minio_volumes | join(' ') }}
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateUsers=self
+ProtectHostname=yes
+ProtectClock=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+{# Issue: systemd does not seem to detect the service is up, maybe an address family is missing? #}
+# RestrictAddressFamilies=AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+
 [Install]
 WantedBy=multi-user.target
